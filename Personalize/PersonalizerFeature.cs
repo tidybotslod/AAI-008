@@ -1,7 +1,7 @@
 ﻿using System.Text;
 
 namespace AAI
-{   
+{
     public class PersonalizationFeature
     {
         public string Name { get; set; }
@@ -21,6 +21,8 @@ namespace AAI
                 return interactivePrompt;
             }
         }
+
+        // Private methods, not publicly accessable.
         static private string BuildPrompt(string prompt, string[] entries)
         {
             StringBuilder ask = new StringBuilder($"{prompt} (enter number or Q to quit)?", 256);

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AAI {
-    public class PersonalizerTraining
+    public class TrainingCase
     {
         public string Name { get; set; }
         public object[] Features { get; set; }

@@ -26,12 +26,12 @@ namespace AAI
             {
                 Console.WriteLine($"Lesson {lessonCount}");
 
-                // Build context list by creating a JSON string and then convert it to a list of objects. 
+                // Build context list by creating a JSON string and then convert it to a list of objects.
                 string[] answers = new string[select.Length];
                 for (int i = 0; i < select.Length; i++)
                 {
                     answers[i] = SelectFeatureInteractively(select[i]);
-                    if (answers[i] == null)
+                    if (answers[i] == "Q")
                     {
                         // When null is returned the training session is over.
                         return;
@@ -49,7 +49,7 @@ namespace AAI
                     excludeActions = new List<string>(ignore);
                 }
 
-                // Create the rank requestr 
+                // Create the rank requestr
                 var request = new RankRequest(Actions, contextFeatures, excludeActions, lessonId, false);
                 RankResponse response = null;
                 response = Client.Rank(request);
@@ -77,18 +77,18 @@ namespace AAI
             } while (true);
         }
 
-        public void TrainingFile(PersonalizerTraining[] cases)
+        public void Train(TrainingCase[] cases)
         {
             if (cases != null)
             {
-                foreach (PersonalizerTraining trial in cases)
+                foreach (TrainingCase case in cases)
                 {
-                    Console.WriteLine($"{trial.Name}:");
+                    Console.WriteLine($"{case.Name}:");
                     string lessonId = Guid.NewGuid().ToString();
-                    var request = new RankRequest(Actions, trial.Features, trial.Exclude, lessonId, false);
+                    var request = new RankRequest(Actions, case.Features, case.Exclude, lessonId, false);
                     RankResponse response = Client.Rank(request);
                     double reward = 0.0;
-                    if (response.RewardActionId.Equals(trial.Expected))
+                    if (response.RewardActionId.Equals(case.Expected))
                     {
                         reward = 1.0;
                     }

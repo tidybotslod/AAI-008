@@ -24,7 +24,7 @@ namespace Personalize
             Personalizer = new PersonalizerService(
                 GetConfigString("PersonalizerEndpointKey"),
                 GetConfigString("PersonalizerResourceName")
-            );  
+            );
         }
 
         public void LoadFeatures(string featureFile)
