@@ -1,7 +1,7 @@
 [
   {
-    "id": "Seductive Sample",
-    "features": [
+    "Id": "Seductive Sample",
+    "Features": [
       {
         "Texture": "Silky",
         "Tone": "Muted",
@@ -13,8 +13,8 @@
     ]
   },
   {
-    "id": "Happy Sample",
-    "features": [
+    "Id": "Happy Sample",
+    "Features": [
       {
         "Texture": "Shiny",
         "Tone": "Bright",
@@ -26,8 +26,8 @@
     ]
   },
   {
-    "id": "Comfortable Sample",
-    "features": [
+    "Id": "Comfortable Sample",
+    "Features": [
       {
         "Texture": "Smooth",
         "Tone": "Muted",
@@ -39,8 +39,8 @@
     ]
   },
   {
-    "id": "Sleepy Sample",
-    "features": [
+    "Id": "Sleepy Sample",
+    "Features": [
       {
         "Texture": "Fuzzy",
         "Tone": "Dark",
