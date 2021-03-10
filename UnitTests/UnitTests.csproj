@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PersonalizerService\PersonalizerService.csproj" />
-    <ProjectReference Include="..\PersonalizeService\PersonalizerService.csproj" />
   </ItemGroup>
 
 </Project>
