@@ -7,10 +7,10 @@ using Microsoft.Azure.CognitiveServices.Personalizer.Models;
 
 using AAI;
 
-namespace UnitTests
+namespace Personalizer
 {
     [TestClass]
-    public class UnitTest1
+    public class Tests
     {
         private static PersonalizerService Personalizer;
 
@@ -54,7 +54,7 @@ namespace UnitTests
             IList<string> exclude = new List<string> { "pasta" };
             var request = new RankRequest(actions, currentContext, exclude, id);
             RankResponse resp = Personalizer.Client.Rank(request);
-            Assert.AreEqual("pasta", resp.RewardActionId);
+            Assert.AreEqual("salad", resp.RewardActionId);
         }
 
         private static string GetConfigString(IConfiguration config, string key)
