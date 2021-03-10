@@ -1,12 +1,10 @@
-﻿using System.Text;
+using System.Text;
 
 namespace AAI
 {
-    public class PersonalizationFeature
+    public class InteractiveFeature : PersonalizationFeature
     {
-        public string Name { get; set; }
-        public string Prompt { get; set; }
-        public string[] Values { get; set; }
+        public InteractiveFeature(PersonalizationFeature feature) : base(feature) {}
         public string InteractivePrompt
         {
             get

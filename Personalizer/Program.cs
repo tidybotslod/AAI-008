@@ -11,8 +11,6 @@ using AAI;
 
 namespace Personalize
 {
-
-
     class Program
     {
         private IConfiguration config;
@@ -56,8 +54,8 @@ namespace Personalize
             string input = File.ReadAllText(trainingFile);
             if (input != null && input.Length > 0)
             {
-                PersonalizerTraining[] trainingData = JsonSerializer.Deserialize<PersonalizerTraining[]>(input);
-                Personalizer.TrainingFile(trainingData);
+                TrainingCase[] trainingData = JsonSerializer.Deserialize<TrainingCase[]>(input);
+                Personalizer.Train(trainingData);
             }
         }
 
@@ -79,7 +77,7 @@ namespace Personalize
             {
                 new Option<string>(
                     new string[] { "-a", "--actions"},
-                    description: "Load Personalizer.Actions from JSON file"),
+                    description: "Load Actions from JSON file"),
                 new Option<string>(
                     new string [] { "-f", "--features" },
                     description: "Load features for training"),

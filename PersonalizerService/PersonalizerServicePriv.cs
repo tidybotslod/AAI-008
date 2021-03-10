@@ -7,8 +7,17 @@ using Microsoft.Azure.CognitiveServices.Personalizer.Models;
 
 namespace AAI
 {
-    public static class Extensions
+    /// <summary>
+    /// Add a string extension function.
+    /// </summary>
+    static class Extensions
     {
+        /// <summary>
+        /// Return a specified number of characters from the end of a string
+        /// </summary>
+        /// <param name="source">Source string</param>
+        /// <param name="numberOfChars">Number of characters to return from the end of the source string</param>
+        /// <returns>String containing the specified number of characters or an empty string if not enough characters are available</returns>
         public static string Last(this string source, int numberOfChars = 1)
         {
             if (source == null || numberOfChars > source.Length)
@@ -19,44 +28,30 @@ namespace AAI
         }
     }
 
-
+    /// <summary>
+    /// Service object that manages a connection to the Azure Personalizer for a set of Actions and Features. The action returned is based on past selections and rewards.
+    /// </summary>
     public partial class PersonalizerService
     {
-        private string personalizerEndpointKey;
-        private string personalizerResourceName;
-        private PersonalizationFeature[] features;
-        private PersonalizerClient client;
-
+        /// <summary>
+        /// Constructo for PersonalizerService
+        /// </summary>
+        /// <param name="endpointKey">Security key for Asure Personalizer service</param>
+        /// <param name="endpointResourceName">Resource name for Asure Personalizer srevice</param>
         public PersonalizerService(string endpointKey, string endpointResourceName)
         {
             personalizerEndpointKey = endpointKey;
             personalizerResourceName = endpointResourceName;
         }
 
+        /// <summary>
+        /// Actions that are Ranked.
+        /// </summary>
         public List<RankableAction> Actions { get; set; }
 
-
-        public PersonalizationFeature[] Features
-        {
-            get
-            {
-                return features;
-            }
-            set
-            {
-                Dictionary<string, PersonalizationFeature> lookup = new Dictionary<string, PersonalizationFeature>();
-                if (value != null)
-                {
-                    foreach (PersonalizationFeature entry in value)
-                    {
-                        lookup.Add(entry.Name, entry);
-                    }
-                }
-                features = value;
-                Lookup = lookup;
-            }
-        }
-
+        /// <summary>
+        /// The Azure Peronsalizer client object, used to rank and reward actons.
+        /// </summary>
         public PersonalizerClient Client
         {
             get
@@ -65,8 +60,36 @@ namespace AAI
             }
         }
 
+        /// <summary>
+        /// List of features used to define the context for the ranking actions.
+        /// </summary>
+        public PersonalizationFeature[] Features
+        {
+            get
+            {
+                return features;
+            }
+            set
+            {
+                Dictionary<string, InteractiveFeature> lookup = new Dictionary<string, InteractiveFeature>();
+                if (value != null)
+                {
+                    foreach (PersonalizationFeature entry in value)
+                    {
+                        lookup.Add(entry.Name, new InteractiveFeature(entry));
+                    }
+                }
+                features = value;
+                Lookup = lookup;
+            }
+        }
 
-       public void InteractiveTraining(string[] select, string[] ignore)
+        /// <summary>
+        /// Interatively asks for feature values to rank the actions. Rewards based on whether the returned action is the one the user expected.
+        /// </summary>
+        /// <param name="select">Features to use in selection process</param>
+        /// <param name="ignore">List of actions to ignore</param>
+        public void InteractiveTraining(string[] select, string[] ignore)
         {
             if (Actions == null || Actions.Count == 0)
             {
@@ -136,28 +159,17 @@ namespace AAI
             } while (true);
         }
 
-        public Dictionary<string, PersonalizationFeature> Lookup { get; private set; }
 
+        // Private helper methods and data.
         private PersonalizerClient CreatePersonalizer()
         {
             string Endpoint = $"https://{personalizerResourceName}.cognitiveservices.azure.com";
             client = new PersonalizerClient(
-             new ApiKeyServiceClientCredentials(personalizerEndpointKey)) { Endpoint = Endpoint };
+             new ApiKeyServiceClientCredentials(personalizerEndpointKey))
+            { Endpoint = Endpoint };
             return client;
         }
-
-
-        public PersonalizationFeature LookupFeature(string id)
-        {
-            PersonalizationFeature result = null;
-            if(Lookup != null)
-            {
-                result = Lookup[id];
-            }
-            return result;
-        }
-
-        public IList<object> FeatureList(string[] select, string[] answers)
+        private IList<object> FeatureList(string[] select, string[] answers)
         {
             if ((select == null || select.Length == 0) ||
                 (answers == null || answers.Length == 0) ||
@@ -166,7 +178,7 @@ namespace AAI
                 return null;
             }
 
-            PersonalizationFeature feature = LookupFeature(select[0]);
+            InteractiveFeature feature = LookupFeature(select[0]);
             StringBuilder contextFeaturesJson = new StringBuilder("[");
             contextFeaturesJson.Append($"{{ \"{feature.Name}\": \"{answers[0]}\" }}");
             for (int i = 1; i < select.Length; i++)
@@ -178,9 +190,27 @@ namespace AAI
             return JsonSerializer.Deserialize<List<object>>(contextFeaturesJson.ToString());
         }
 
-        public string SelectFeatureInteractively(string name)
+        private string GetKey()
         {
-            PersonalizationFeature feature = LookupFeature(name);
+            return Console.ReadKey().Key.ToString().Last().ToUpper();
+        }
+
+
+        private Dictionary<string, InteractiveFeature> Lookup { get; set; }
+
+        private InteractiveFeature LookupFeature(string id)
+        {
+            InteractiveFeature result = null;
+            if(Lookup != null)
+            {
+                result = Lookup[id];
+            }
+            return result;
+        }
+
+        private  string SelectFeatureInteractively(string name)
+        {
+            InteractiveFeature feature = LookupFeature(name);
             if (feature == null)
             {
                 return null;
@@ -209,11 +239,12 @@ namespace AAI
                 }
             } while (true);
         }
-        public string GetKey()
-        {
-            return Console.ReadKey().Key.ToString().Last().ToUpper();
-        }
 
+
+        private string personalizerEndpointKey;
+        private string personalizerResourceName;
+        private PersonalizationFeature[] features;
+        private PersonalizerClient client;
 
     }
 
